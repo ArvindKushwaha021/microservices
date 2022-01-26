@@ -61,3 +61,18 @@ spring.cloud.config.profile=dev
 spring.cloud.config.name=limits-service
 
 this property has preference over application name to fetch the properties.
+
+#Currency exchange service
+
+http://localhost:8000/currency-exchange/from/USD/to/INR
+Response Structure
+{
+   "id":10001,
+   "from":"USD",
+   "to":"INR",
+   "conversionMultiple":65.00,
+   "environment":"8000 instance-id"
+}
+spring.application.name=currency-exchange-service
+server.port=8000
+spring.config.import=optional:configserver:http://localhost:8888
