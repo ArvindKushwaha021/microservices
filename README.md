@@ -76,3 +76,8 @@ Response Structure
 spring.application.name=currency-exchange-service
 server.port=8000
 spring.config.import=optional:configserver:http://localhost:8888
+
+	@Autowired
+	Environment environment;-- this give the environment detail of the application
+	
+	environment.getProperty("local.server.port");-- this tell the port on which app is running.
