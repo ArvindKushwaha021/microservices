@@ -94,4 +94,16 @@ from springboot 2.4 version data.sql is executed even before creation of table S
 
 spring.jpa.defer-datasource-initialization=true
 
+#currency-conversion-service
+http://localhost:8100/currency-conversion/from/USD/to/INR/quantity/10
+{
+  "id": 10001,
+  "from": "USD",
+  "to": "INR",
+  "conversionMultiple": 65.00,
+  "quantity": 10,
+  "totalCalculatedAmount": 650.00,
+  "environment": "8000 instance-id"
+}
+
 	
