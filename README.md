@@ -106,4 +106,51 @@ http://localhost:8100/currency-conversion/from/USD/to/INR/quantity/10
   "environment": "8000 instance-id"
 }
 
+#CurrencyConversion with Feign
+
+<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
+		</dependency>
+		
+		
+@EnableFeignClients in main class to enable feign
+-->create a interface which is called proxy
+
+@FeignClient(name="currency-exchange", url="localhost:8000")
+here name should be the application name for which this proxy is create and whose rest api needs to be called from this application.
+url should be the "doman(IP):port"
+public interface CurrencyExchangeProxy {
+	//There is some problem in feign So it is mandatory to pass (value="xyz") in PathVariable annotation
+	/*@GetMapping("/currency-exchange/from/{from}/to/{to}")	
+	public CurrencyConversion retrieveExchangeValue(@PathVariable String from, @PathVariable String to);*/
+	
+	
+	@GetMapping("/currency-exchange/from/{from}/to/{to}")	
+	public CurrencyConversion retrieveExchangeValue(@PathVariable(value="from") String from, 	@PathVariable(value="to") String to);
+--This is the same method that is defined in CurrencyExchangeControler in currency-exchange project.
+But here we are using CurrencyConversion as return type while It is CurrencyExchange in CurrencyExchangeControler.
+But this is not an issue in this case because CurrencyConversion have all parameter of CurrencyExchange So It will be mapped.
+
+Now We can remove below boilerplate code to call rest api just with one line
+
+Existing boilerplance code with resttemplate
+Map<String, String> urlVariables=new HashMap<>();
+		urlVariables.put("from", from);
+		urlVariables.put("to", to);
+		ResponseEntity<CurrencyConversion> responseEntity = new RestTemplate().
+				getForEntity("http://localhost:8000/currency-exchange/from/{from}/to/{to}", 
+				CurrencyConversion.class,urlVariables);
+		CurrencyConversion currencyConversion = responseEntity.getBody();
+
+--One liner code to execute rest call
+CurrencyConversion currencyConversion = proxy.retrieveExchangeValue(from, to);
+}
+
+
+
+
+
+
+
 	

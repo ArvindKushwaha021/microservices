@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +13,8 @@ import org.springframework.web.client.RestTemplate;
 
 @RestController
 public class CurrencyConversionController {
+	@Autowired
+	private CurrencyExchangeProxy proxy;
 
 	@GetMapping("/currency-conversion/from/{from}/to/{to}/quantity/{quantity}")
 	public CurrencyConversion retriveCurrnecyConversion(
@@ -32,7 +35,24 @@ public class CurrencyConversionController {
 									  quantity,
 									  currencyConversion.getConversionMultiple(),
 									  quantity.multiply(currencyConversion.getConversionMultiple()),
-									  "8100");
+									  currencyConversion.getEnvironment()+" :Rest");
 		
+	}
+	
+	
+	@GetMapping("/currency-conversion-feign/from/{from}/to/{to}/quantity/{quantity}")
+	public CurrencyConversion retriveCurrnecyConversionFeign(
+				@PathVariable String from,
+				@PathVariable String to,
+				@PathVariable BigDecimal quantity) {
+		
+		CurrencyConversion currencyConversion = proxy.retrieveExchangeValue(from, to);
+		return new CurrencyConversion(1000L,
+									  from,
+									  to,
+									  quantity,
+									  currencyConversion.getConversionMultiple(),
+									  quantity.multiply(currencyConversion.getConversionMultiple()),
+									  currencyConversion.getEnvironment()+" :Feign");		
 	}
 }
