@@ -83,3 +83,15 @@ spring.config.import=optional:configserver:http://localhost:8888
 	Environment environment;-- this give the environment detail of the application
 	
 	environment.getProperty("local.server.port");-- this tell the port on which app is running.
+	
+#Fetching currency exchange from DB(h2 database)
+spring.jpa.show-sql=true
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.h2.console.enable=true
+
+--create data.sql parallel to application.properties.
+from springboot 2.4 version data.sql is executed even before creation of table So It will give error. define below property to defer the insertion
+
+spring.jpa.defer-datasource-initialization=true
+
+	
