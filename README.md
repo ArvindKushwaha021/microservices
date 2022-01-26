@@ -77,6 +77,8 @@ spring.application.name=currency-exchange-service
 server.port=8000
 spring.config.import=optional:configserver:http://localhost:8888
 
+
+	import org.springframework.core.env.Environment;	
 	@Autowired
 	Environment environment;-- this give the environment detail of the application
 	
