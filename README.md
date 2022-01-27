@@ -170,7 +170,7 @@ on different port(9010) then we have to specify the machine and port manually by
 eureka.client.serviceUrl.defaultZone=http://localhost:9010/eureka
 
 # Loadbalancing 
-In Earlier version of Spring cloud Zuul from netflix was used for load balancing. But now spring cloud comes
+In Earlier version of Spring cloud Netflix's Ribbon was used for load balancing. But now spring cloud comes
 with it's own load balancer. It is part of dependency(jar) spring-cloud-starter-netflix-eureka-client which internaly contain spring-cloud-netflix-eureka-client..
 
 If we are using feign and eureka , loadbalacing come as free. It is client side load balancing. Feing using same loadbalancer jar for load balancing.
