@@ -168,6 +168,19 @@ The client will register to naming server if it is running on default port on sa
 on different port(9010) then we have to specify the machine and port manually by below property
 
 eureka.client.serviceUrl.defaultZone=http://localhost:9010/eureka
+
+# Loadbalancing 
+In Earlier version of Spring cloud Zuul from netflix was used for load balancing. But now spring cloud comes
+with it's own load balancer. It is part of dependency(jar) spring-cloud-starter-netflix-eureka-client which internaly contain spring-cloud-netflix-eureka-client..
+
+If we are using feign and eureka , loadbalacing come as free. It is client side load balancing. Feing using same loadbalancer jar for load balancing.
+
+to achieve the load balancer we only need to do below change in CurrenyExchangeProxy
+
+//@FeignClient(name="currency-exchange", url="localhost:8000")
+@FeignClient(name="currency-exchange")-- just remove url.
+
+If we are removing feign check with eureka server if any service is running with name currency-exchange and load balance automatically.
 	
 
 
