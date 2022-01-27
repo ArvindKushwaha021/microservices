@@ -22,7 +22,7 @@ public class CurrencyConversionController {
 				@PathVariable String to,
 				@PathVariable BigDecimal quantity) {
 		
-		Map<String, String> urlVariables=new HashMap<>();
+		Map<String, String> urlVariables=new HashMap<String,String>();
 		urlVariables.put("from", from);
 		urlVariables.put("to", to);
 		ResponseEntity<CurrencyConversion> responseEntity = new RestTemplate().

@@ -147,10 +147,28 @@ Map<String, String> urlVariables=new HashMap<>();
 CurrencyConversion currencyConversion = proxy.retrieveExchangeValue(from, to);
 }
 
+#Euereka Naming Server:
 
+add Eureka Server dependency
+use @EnableEurekaServer to enable server
 
+spring.application.name=naming-server
+server.port=8761
+eureka.client.register-with-eureka=false --as this is naming server So we have to disable the register for it
+eureka.client.fetch-registory=false --as this is naming server So we have to disable the fetch for it
 
+>> Add below dependency in Clients sto that they can register with naming server.
+		<dependency>
+   			 <groupId>org.springframework.cloud</groupId>
+   			  <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+		</dependency>
 
+We have add only the dependency in clients , not other change is required in app. 
+The client will register to naming server if it is running on default port on same machine. It it is running
+on different port(9010) then we have to specify the machine and port manually by below property
 
-
+eureka.client.serviceUrl.defaultZone=http://localhost:9010/eureka
 	
+
+
+
