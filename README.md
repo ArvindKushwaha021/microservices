@@ -292,7 +292,9 @@ dependencies required for relillience4j
 1. Retry
 create simple api that will fail
 	@GetMapping("/sample-api")
-	@Retry(name = "sample-api")--this will retry multiple time before returning the response
+	@Retry(name = "default")-- it will use default configurations.
+	@Retry(name = "sample-api")--this will retry multiple time before returning the response and use sample-api properties defined in application.properties.
+	
 	@Retry(name = "sample-api", fallbackMethod = "hardcodedResponse")--this will return mulitiple time then it will call the hardcodedResponse method.
 	Note: hardcodedResponse method should accept parameter as Throwable. We can define overloaded method with different Exception and those method will be called if particular exception occurs.
 	
@@ -315,6 +317,19 @@ We can define below properties for handling
 resilience4j.retry.instances.sample-api.maxRetryAttempts=5 -- It will retry 5 times
 resilience4j.retry.instances.sample-api.waitDuration=1s ---this is duration between retry
 resilience4j.retry.instances.sample-api.enableExponentialBackoff=true-- if It is true It will retry in exponential time like 1,1.5, 2.5, 4.5 etc.
+
+
+2. CircuitBreaker
+
+https://resilience4j.readme.io/docs/circuitbreaker
+
+CircuitBreaker pattern means work on finite state machine with 3 states
+CLOSED, OPEN, HALF-OPEN.
+Initiatl It is in CLOSED state if the api start failing after specific number of failiure It will make the state as OPEN and the api will not be called and fallback response will be send and for some request It will send the hard coded response.
+@CircuitBreaker(name = "default", fallbackMethod = "hardcodedResponse")
+
+
+
 
 
 
