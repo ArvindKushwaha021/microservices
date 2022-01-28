@@ -181,7 +181,94 @@ to achieve the load balancer we only need to do below change in CurrenyExchangeP
 @FeignClient(name="currency-exchange")-- just remove url.
 
 If we are removing feign check with eureka server if any service is running with name currency-exchange and load balance automatically.
+
+#Api Gateway
+In typical microservice architecture there would be 100 of microservices and these microservices will have lot of common feature, authentication , authorization, logging etc where would these be implemented. Typical solution is Api gateway. In earlier version of Spring cloud netfix Zuul was used as api gateway but it is not supported now. So in new version spring cloud gateway is used Api gateway.
+
+To implement api gateway just create a project with eureka discovery client and spring cloud gateway dependency
+ property file
+spring.application.name=api-gateway
+server.port=8765
+#eureka.client.serviceUrl.defaultZone=http://localhost:8761/eureka
+spring.cloud.gateway.discovery.locator.enabled=true --It is mandatory to work the api gate way.
+It is running on port 8765 so just use be below urls to access the application
+
+API GATEWAY urls
+http://localhost:8765/CURRENCY-EXCHANGE/currency-exchange/from/USD/to/INR --here CURRENCY-EXCHANGE is the application name registred and showing on naming server console
+http://localhost:8765/CURRENCY-CONVERSION/currency-conversion-feign/from/USD/to/INR/quantity/10
+
+here upper case name is not looking good to add below property to make is lowercase
+
+spring.cloud.gateway.discovery.locator.lowerCaseServiceId=true
+
+after adding this below url will work
+http://localhost:8765/currency-exchange/currency-exchange/from/USD/to/INR
+
+#API gateway features
+Simple, yet effective way to route to APIs
+Provide cross cutting concerns:
+Security
+Monitoring/metrics
+Built on top of Spring WebFlux (Reactive
+Approach)
+Features:
+Match routes on any request attribute
+Define Predicates and Filters
+Integrates with Spring Cloud Discovery Client (Load
+Balancing)
+Path Rewriting
+
+For Croscutting concernn we need to implement the filters
+
+@Component
+public class LoggingFilter implements GlobalFilter {
+
+	private Logger logger = LoggerFactory.getLogger(LoggingFilter.class);
 	
+	@Override
+	public Mono<Void> filter(ServerWebExchange exchange, 
+			GatewayFilterChain chain) {
+		logger.info("Path of the request received -> {}", 
+				exchange.getRequest().getPath());
+		logger.info("Query parameters of the request received -> {}", 
+				exchange.getRequest().getQueryParams());
+		return chain.filter(exchange);
+	}
+
+}
+
+For routing using API Gateway:
+
+@Configuration
+public class ApiGatewayConfiguration {
+	
+	@Bean
+	public RouteLocator gatewayRouter(RouteLocatorBuilder builder) {
+		return builder.routes()
+				.route(p -> p
+						.path("/get")
+						.filters(f -> f
+								.addRequestHeader("MyHeader", "MyURI")
+								.addRequestParameter("Param", "MyValue"))
+						.uri("http://httpbin.org:80"))
+				.route(p -> p.path("/currency-exchange/**")
+						.uri("lb://currency-exchange"))
+				.route(p -> p.path("/currency-conversion/**")
+						.uri("lb://currency-conversion"))
+				.route(p -> p.path("/currency-conversion-feign/**")
+						.uri("lb://currency-conversion"))
+				.route(p -> p.path("/currency-conversion-new/**")
+						.filters(f -> f.rewritePath(
+								"/currency-conversion-new/(?<segment>.*)", 
+								"/currency-conversion-feign/${segment}"))
+						.uri("lb://currency-conversion"))
+				.build();
+	}
+
+}
+
+
+
 
 
 
