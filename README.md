@@ -267,7 +267,54 @@ public class ApiGatewayConfiguration {
 
 }
 
+#Resilience4j
+Resilience4j is a lightweight, easy-to-use fault tolerance library inspired by
+Netflix Hystrix, but designed for Java 8 and functional programming. Lightweight, because the library only uses Vavr, which does not have any other external library dependencies. Netflix Hystrix, in contrast, has a compile dependency to Archaius which has many more external library dependencies such as Guava and Apache Commons Configuration.
 
+Resilience4j provides higher-order functions (decorators) to enhance any functional interface, lambda expression or method reference with a Circuit Breaker, Rate Limiter, Retry or Bulkhead. You can stack more than one decorator on any functional interface, lambda expression or method reference. The advantage is that you have the choice to select the decorators you need and nothing else.
+
+resilience4j-circuitbreaker: Circuit breaking
+resilience4j-ratelimiter: Rate limiting
+resilience4j-bulkhead: Bulkheading
+resilience4j-retry: Automatic retrying (sync and async)
+resilience4j-cache: Result caching
+resilience4j-timelimiter: Timeout handling
+
+https://resilience4j.readme.io/docs/
+
+dependencies required for relillience4j
+
+
+ compile "io.github.resilience4j:resilience4j-spring-cloud2:${resilience4jVersion}"
+    compile('org.springframework.boot:spring-boot-starter-actuator')
+    compile('org.springframework.boot:spring-boot-starter-aop')
+    
+1. Retry
+create simple api that will fail
+	@GetMapping("/sample-api")
+	@Retry(name = "sample-api")--this will retry multiple time before returning the response
+	@Retry(name = "sample-api", fallbackMethod = "hardcodedResponse")--this will return mulitiple time then it will call the hardcodedResponse method.
+	Note: hardcodedResponse method should accept parameter as Throwable. We can define overloaded method with different Exception and those method will be called if particular exception occurs.
+	
+ public String sampleApi() {
+		logger.info("Sample api call received");
+		ResponseEntity<String> forEntity = new 	RestTemplate().getForEntity("http://localhost:8080/some-dummy-url", 
+					String.class);
+	//return forEntity.getBody();
+		return "sample-api";
+	}
+	
+	public String hardcodedResponse(Exception ex) {
+		logger.info("returning hardcoded response");
+		return "fallback-response";
+	}
+	
+We can define below properties for handling
+
+---here sample.api is the name defined in @Retry annotation
+resilience4j.retry.instances.sample-api.maxRetryAttempts=5 -- It will retry 5 times
+resilience4j.retry.instances.sample-api.waitDuration=1s ---this is duration between retry
+resilience4j.retry.instances.sample-api.enableExponentialBackoff=true-- if It is true It will retry in exponential time like 1,1.5, 2.5, 4.5 etc.
 
 
 
