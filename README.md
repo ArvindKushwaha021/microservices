@@ -329,6 +329,24 @@ Initiatl It is in CLOSED state if the api start failing after specific number of
 @CircuitBreaker(name = "default", fallbackMethod = "hardcodedResponse")
 
 
+resilience4j.ratelimiter.instances.default.limitForPeriod=2
+resilience4j.ratelimiter.instances.default.limitRefreshPeriod=10s
+--It means It will allow only two calls in 10s period and other will be failed.After 2 calls It will fail and give "RateLimiter 'default' does not permit further calls" error.
+
+3. Bulkhead- It means it will allow max n number of concurrent calls
+	//@Bulkhead(name="sample-api")
+
+#resilience4j.bulkhead.instances.default.maxConcurrentCalls=10
+#resilience4j.bulkhead.instances.sample-api.maxConcurrentCalls=10
+
+Note: for @Retry, @Circutibreaker, @Ratelimiter and @Buldhead We can define it on mulitple methods with same name  or different name. If we want defferent behavior for different api we can just define with different name parameter and define the resilience4j properties with same name.
+
+example
+resilience4j.bulkhead.instances.default.maxConcurrentCalls=10
+resilience4j.bulkhead.instances.sample-api.maxConcurrentCalls=10
+
+here two same properties are defined for different name means for different api's.
+
 
 
 
