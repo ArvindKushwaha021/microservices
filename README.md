@@ -347,8 +347,30 @@ resilience4j.bulkhead.instances.sample-api.maxConcurrentCalls=10
 
 here two same properties are defined for different name means for different api's.
 
+#Zipkin and sleuth
+docker run -p 9411:9411 openzipkin/zipkin:2.23
+spring.zipkin.baseUrl=http://localhost:9411/
 
+Zipkin and sleuth are used for distributed tracing. Slueth add a trace Id in the request which sent with request across each microservice.When zipkin dependency available at classpath spring cloud check that if zipkin is running at default port 9411 It send the request to Zipkin server.
 
+	<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-sleuth</artifactId>
+		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-sleuth-zipkin</artifactId>
+		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.amqp</groupId>
+			<artifactId>spring-rabbit</artifactId>
+		</dependency>
+		
+spring.sleuth.sampler.probability=1.0 ---It means It will send 100% requests to zipkin.
 
+Generall we do not send all the request to zipkin due to performance issue.
+
+spring.zipkin.baseUrl=http://localhost:9400/-- define if zipkin is running on some other port.
+spring.zipkin.sender.type=rabbit
